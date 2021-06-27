@@ -56,7 +56,7 @@ module.exports = (grunt) => {
 				src: ['tests/**/*.js', '!tests/libs/**/*.js']
 			},
 			translations: {
-				src: 'languages/**/*.js'
+				src: 'src/languages/**/*.js'
 			}
 		},
 
