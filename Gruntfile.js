@@ -118,7 +118,7 @@ module.exports = (grunt) => {
 					},
 					{
 						expand: true,
-						src: 'emoticons/**',
+						src: 'src/emoticons/**',
 						dest: 'dist/'
 					}
 				]
