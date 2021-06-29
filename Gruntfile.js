@@ -62,7 +62,6 @@ module.exports = (grunt) => {
 
 		// Removes all the old files from the distributable directory
 		clean: {
-			build: ['minified/', 'coverage/'],
 			dist: ['dist/']
 		},
 
@@ -73,52 +72,8 @@ module.exports = (grunt) => {
 				files: [
 					{
 						expand: true,
-						src: ['minified/**', 'languages/**'],
-						dest: 'dist/'
-					},
-					{
-						expand: true,
 						cwd: 'src/',
-						src: ['plugins/**.js', 'formats/**.js', 'icons/**.js'],
-						dest: 'dist/development/'
-					},
-					{
-						expand: true,
-						cwd: 'src/',
-						src: 'jquery.sceditor.default.css',
-						dest: 'dist/development/'
-					},
-					{
-						expand: true,
-						cwd: 'src/themes/icons/',
-						src: '*.png',
-						dest: 'dist/development/themes/'
-					},
-					{
-						expand: true,
-						cwd: 'src/themes/',
-						src: 'content/**',
-						dest: 'dist/development/themes/'
-					},
-					{
-						expand: true,
-						src: 'README.md',
-						dest: 'dist/'
-					},
-					{
-						expand: true,
-						src: 'MIT.txt',
-						dest: 'dist/'
-					},
-					{
-						expand: true,
-						cwd: 'distributable/data/',
-						src: 'example.html',
-						dest: 'dist/'
-					},
-					{
-						expand: true,
-						src: 'src/emoticons/**',
+						src: 'emoticons/**',
 						dest: 'dist/'
 					}
 				]
@@ -131,13 +86,13 @@ module.exports = (grunt) => {
 						expand: true,
 						cwd: 'src/themes/icons/',
 						src: '*.png',
-						dest: 'minified/themes/'
+						dest: 'dist/themes/'
 					},
 					{
 						expand: true,
 						cwd: 'src/themes/',
 						src: 'content/**',
-						dest: 'minified/themes/',
+						dest: 'dist/themes/',
 						rename: function (dest, src) {
 							return dest + src.replace('.css','.min.css');
 						}
@@ -162,41 +117,14 @@ module.exports = (grunt) => {
 			},
 			build: {
 				files: {
-					'./minified/jquery.sceditor.min.js': [
-						'./src/jquery.sceditor.js'
-					],
-					'./minified/sceditor.min.js': [
-						'./src/sceditor.js'
-					]
+					'./dist/jquery.sceditor.min.js': ['./src/jquery.sceditor.js'],
+					'./dist/sceditor.min.js': ['./src/sceditor.js']
 				}
 			},
 			dist: {
 				files: {
-					'./dist/development/jquery.sceditor.js': [
-						'./src/jquery.sceditor.js'
-					],
-					'./dist/development/sceditor.js': [
-						'./src/sceditor.js'
-					]
-				}
-			}
-		},
-
-		// Create the XHTML and BBCode bundled JS files
-		concat: {
-			dist: {
-				options: {
-					separator: ';'
-				},
-				files: {
-					'dist/development/jquery.sceditor.bbcode.js': [
-						'dist/development/jquery.sceditor.js',
-						'src/formats/bbcode.js'
-					],
-					'dist/development/jquery.sceditor.xhtml.js': [
-						'dist/development/jquery.sceditor.js',
-						'src/formats/xhtml.js'
-					]
+					'./dist/jquery.sceditor.min.js': ['./src/jquery.sceditor.js'],
+					'./dist/sceditor.min.js': ['./src/sceditor.js']
 				}
 			}
 		},
@@ -211,38 +139,23 @@ module.exports = (grunt) => {
 					banner: '/* SCEditor v<%= pkg.version %> | ' +
 					'(C) 2017, Sam Clarke | sceditor.com/license */\n'
 				},
-				files: [
-					{
-						src: 'minified/sceditor.min.js',
-						dest: 'minified/sceditor.min.js'
-					},
-					{
-						src: 'minified/jquery.sceditor.min.js',
-						dest: 'minified/jquery.sceditor.min.js'
-					},
-					{
-						src: [
-							'minified/jquery.sceditor.min.js',
-							'src/formats/bbcode.js'
-						],
-						dest: 'minified/jquery.sceditor.bbcode.min.js'
-					},
-					{
-						src: [
-							'minified/jquery.sceditor.min.js',
-							'src/formats/xhtml.js'
-						],
-						dest: 'minified/jquery.sceditor.xhtml.min.js'
-					},
-					{
-						expand: true,
-						filter: 'isFile',
-						cwd: 'src/',
-						src: ['plugins/**.js', 'formats/**.js', 'icons/**.js'],
-						dest: 'minified/'
+				files: [{
+					'dist/sceditor.min.js': ['src/sceditor.js'],
+					'dist/jquery.sceditor.min.js': ['src/jquery.sceditor.js'],
+					'dist/jquery.sceditor.bbcode.min.js': ['src/jquery.sceditor.js', 'src/formats/bbcode.js'],
+					'dist/jquery.sceditor.xhtml.min.js': ['src/jquery.sceditor.js', 'src/formats/xhtml.js']
+				},
+				{
+					expand: true,
+					filter: 'isFile',
+					cwd: 'src/',
+					src: ['formats/**.js', 'icons/**.js', 'languages/**.js', 'plugins/**.js', '!languages/template.js'],
+					dest: 'dist/',
+					rename: function (dst, src) {
+						return dst + '/' + src.replace('.js', '.min.js');
 					}
-				]
-			}
+				}]
+			},
 		},
 
 		// Convert the less CSS theme files into CSS
@@ -274,8 +187,8 @@ module.exports = (grunt) => {
 						filter: 'isFile',
 						cwd: 'src/themes/',
 						src: ['*.less'],
-						dest: 'dist/development/themes/',
-						ext: '.css'
+						dest: 'dist/themes/',
+						ext: '.min.css'
 					}
 				]
 			}
@@ -306,14 +219,17 @@ module.exports = (grunt) => {
 		compress: {
 			dist: {
 				options: {
-					archive: 'distributable/sceditor-<%= pkg.version %>.zip'
+					archive: 'releases/sceditor-<%= pkg.version %>.zip'
 				},
 				files: [
 					{
 						expand: true,
 						cwd: 'dist/',
 						src: ['**']
-					}
+					},
+					[
+						'README.md', 'LICENSE.md'
+					]
 				]
 			}
 		},
@@ -328,11 +244,9 @@ module.exports = (grunt) => {
 		}
 	});
 
-
 	grunt.loadNpmTasks('@lodder/grunt-postcss');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-compress');
-	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
@@ -347,7 +261,7 @@ module.exports = (grunt) => {
 
 	// Minifies the source
 	grunt.registerTask('build', [
-		'clean:build',
+		'clean:dist',
 		'copy:build',
 		'rollup:build',
 		'uglify:build',
@@ -360,9 +274,7 @@ module.exports = (grunt) => {
 	grunt.registerTask('dist', [
 		'test',
 		'build',
-		'clean:dist',
 		'rollup:dist',
-		'concat:dist',
 		'copy:dist',
 		'less:dist'
 	]);
