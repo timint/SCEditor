@@ -171,7 +171,7 @@ module.exports = (grunt) => {
 						filter: 'isFile',
 						cwd: 'src/themes/',
 						src: ['*.less'],
-						dest: 'minified/themes/',
+						dest: 'dist/themes/',
 						ext: '.min.css'
 					}
 				]
@@ -207,9 +207,9 @@ module.exports = (grunt) => {
 					{
 						expand: true,
 						filter: 'isFile',
-						cwd: 'minified/',
+						cwd: 'dist/',
 						src: ['themes/**/*.css'],
-						dest: 'minified/'
+						dest: 'dist/'
 					}
 				]
 			}
